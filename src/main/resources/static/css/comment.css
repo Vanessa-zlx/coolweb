@@ -1,0 +1,23 @@
+.comments-box {
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    position: relative;
+    background-color: #f9f9f9;
+}
+.comments {
+    padding-left: 20px;
+    border-left: 2px solid #ccc;
+    margin-top: 8px;
+}
+.comment {
+    margin-bottom: 6px;
+}
+.comment-author {
+    font-weight: bold;
+    margin-right: 5px;
+    color: #555;
+}
+.comment-content {
+    color: #777;
+}

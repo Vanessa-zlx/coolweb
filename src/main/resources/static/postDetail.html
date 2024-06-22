@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.15.9/theme-chalk/index.css">
+    <style>
+        body {
+            background-image: url("imgs/bg.jpg");
+            overflow-x: hidden !important;
+        }
+
+        .center {
+            width: 1050px;
+            margin: 0 auto;
+            height: auto;
+        }
+
+        #side {
+            float: left;
+            height: 100%; /* 全高：如果你想要 "auto" 高度，请删除它 */
+            position: fixed; /* 固定侧边栏（滚动时保持原位）*/
+            z-index: 1; /* 保持领先 */
+            top: 250px; /* 保持在顶部 */
+            left: 0;
+            overflow-x: hidden; /* 禁用水平滚动 */
+            padding-top: 20px;
+        }
+
+        #menu {
+            height: 70%;
+            position: fixed;
+            background-color: rgba(0, 0, 0, 0.5);
+            width: 220px;
+            transition: 1000ms all cubic-bezier(0.19, 1, 0.22, 1);
+            transform: translateX(-100%);
+            left: 60px;
+        }
+
+        #menu.expanded {
+            transform: translateX(0%);
+            left: 0px;
+        }
+
+        .menu-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        #blob {
+            top: 0;
+            z-index: -1;
+            right: 60px;
+            transform: translateX(100%);
+            height: 100%;
+            position: absolute;
+        }
+
+        #blob-path {
+            height: 100%;
+            fill:  lightcoral;
+        }
+
+        .hamburger {
+            right: 20px;
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+        }
+
+        .hamburger .line {
+            width: 100%;
+            height: 4px;
+            /*background-color: #000;*/
+            position: absolute;
+        }
+
+        .hamburger .line:nth-child(2) {
+            top: 50%;
+            margin-top: -2px;
+        }
+
+        .hamburger .line:nth-child(3) {
+            bottom: 0;
+        }
+
+        h1 {
+            position: fixed;
+            right: 0;
+            margin: 0;
+        }
+
+        /*ul {*/
+        /*    padding: 0;*/
+        /*    list-style: none;*/
+        /*    width: 80%;*/
+        /*    margin-left: 10%;*/
+        /*    position: absolute;*/
+        /*    top: 10px;*/
+        /*}*/
+
+        ul li {
+            color: #fff;
+            font-family: sans-serif;
+            padding: 20px 0;
+        }
+
+
+        body {
+            cursor:url('imgs/default.cur'), auto;
+        }
+        a {
+            text-decoration: none;
+            cursor:url('imgs/pointer.cur'), auto;
+        }
+        #content > p{
+            font-size:20px;
+            line-height: 1.5;
+        }
+        #content img{
+            width: 645px;
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+
+        <el-header height="80px">
+            <my-header :user="user"></my-header>
+        </el-header>
+
+        <!--侧边导航栏-->
+        <el-aside>
+            <my-aside></my-aside>
+        </el-aside>
+
+
+        <el-main class="center"  v-if="commentsLoaded">
+            <el-row gutter="20">
+                <el-col span="24">
+                    <el-card shadow="always" style="height: auto;">
+                        <el-row type="flex" justify="center" style="margin-top: 50px; margin-bottom: 40px">
+                            <el-col :span="18" >
+                                <img :src="post.postCover" alt="文章" style="width: 750px; height: 420px;">
+                            </el-col>
+                        </el-row>
+
+                        <el-row type="flex" justify="center">
+                            <el-col :span="16">
+                                <div style="position: relative;
+                                 background-color: transparent; margin: 0 auto; color: #1A202c;
+                                font-size: 30px; "
+                                >{{post.postTitle}}
+                                </div>
+                            </el-col>
+                        </el-row>
+                        <el-divider></el-divider>
+                        <el-row type="flex" justify="center">
+                            <el-col :span="16">
+                                <div style="position: relative;
+                                 background-color: transparent; margin: 0 auto; color: #2e3c50;
+                                font-size: 20px; line-height: 1.5"
+                                >{{post.postBrief}}
+                                </div>
+                            </el-col>
+                        </el-row>
+                        <el-row type="flex" justify="center">
+                            <el-col :span="16">
+                                <div id="content" style="position: relative;
+                                 background-color: transparent; margin: 0 auto; color:#2c3e50"
+                                     v-html="post.postContent">
+                                </div>
+                            </el-col>
+                        </el-row>
+                        <el-divider></el-divider>
+                    </el-card>
+                </el-col>
+
+            </el-row>
+            <div style="margin-bottom: 20px; margin-top: 30px">
+                <el-button round
+                           size="medium"
+                           @click="changePost(currentIndex - 1)">&lt;上一个</el-button>
+                <el-button round @click="changePost(currentIndex + 1)" style="float: right">下一个&gt;</el-button>
+            </div>
+
+            <comments :comments="comments" :user="user"
+                @submit-comment="handleCommentSubmission"></comments>
+
+        </el-main>
+
+        <el-footer>
+            <my-footer></my-footer>
+        </el-footer>
+    </el-container>
+</div>
+
+<script src="js/vue.js"></script>
+<script src="js/element-ui_2.15.9_index.js"></script>
+<script src="js/eui.js"></script>
+<script src="js/axios.min.js"></script>
+<script src="js/my-header.js"></script>
+<script src="js/my-footer.js"></script>
+<script src='js/jquery-1.12.4.min.js'></script>
+<script src="./js/comment.js"></script>
+
+<script>
+    $(window).load(function(){
+        var height = window.innerHeight,
+            x= 0, y= height/2,
+            curveX = 10,
+            curveY = 0,
+            targetX = 0,
+            xitteration = 0,
+            yitteration = 0,
+            menuExpanded = false;
+
+        blob = $('#blob'),
+            blobPath = $('#blob-path'),
+
+            hamburger = $('.hamburger');
+
+        $(this).on('mousemove', function(e){
+            x = e.pageX;
+
+            y = e.pageY-50;
+        });
+
+        $('.hamburger, .menu-inner').on('mouseenter', function(){
+            $(this).parent().addClass('expanded');
+            menuExpanded = true;
+        });
+
+        $('.menu-inner').on('mouseleave', function(){
+            menuExpanded = false;
+            $(this).parent().removeClass('expanded');
+        });
+
+        function easeOutExpo(currentIteration, startValue, changeInValue, totalIterations) {
+            return changeInValue * (-Math.pow(2, -10 * currentIteration / totalIterations) + 1) + startValue;
+        }
+
+        var hoverZone = 150;
+        var expandAmount = 20;
+
+        function svgCurve() {
+            if ((curveX > x-1) && (curveX < x+1)) {
+                xitteration = 0;
+            } else {
+                if (menuExpanded) {
+                    targetX = 0;
+                } else {
+                    xitteration = 0;
+                    if (x > hoverZone) {
+                        targetX = 0;
+                    } else {
+                        targetX = -(((60+expandAmount)/100)*(x-hoverZone));
+                    }
+                }
+                xitteration++;
+            }
+
+            if ((curveY > y-1) && (curveY < y+1)) {
+                yitteration = 0;
+            } else {
+                yitteration = 0;
+                yitteration++;
+            }
+
+            curveX = easeOutExpo(xitteration, curveX, targetX-curveX, 100);
+            curveY = easeOutExpo(yitteration, curveY, y-curveY, 100);
+
+            var anchorDistance = 200;
+            var curviness = anchorDistance - 40;
+
+            var newCurve2 = "M60,"+height+"H0V0h60v"+(curveY-anchorDistance)+"c0,"+curviness+","+curveX+","+curviness+","+curveX+","+anchorDistance+"S60,"+(curveY)+",60,"+(curveY+(anchorDistance*2))+"V"+height+"z";
+
+            blobPath.attr('d', newCurve2);
+
+            blob.width(curveX+60);
+
+            hamburger.css('transform', 'translate('+curveX+'px, '+curveY+'px)');
+
+
+            window.requestAnimationFrame(svgCurve);
+        }
+
+        window.requestAnimationFrame(svgCurve);
+
+    });
+</script>
+
+<script>
+    let v = new Vue({
+        el: "#app",
+        data: function () {
+            return {
+                postArr: [],
+                post: {},
+                user:{
+                    name:"",
+                    password:"",
+                    nickname:"",
+                    email:"",
+                    phone:""
+                },
+                currentIndex: 0,
+
+                currentPage: 1,
+                pageSize: 5, // 每页显示的评论数
+                comments: [
+                ],
+
+                commentsLoaded: false
+            }
+        },
+        computed: {
+        },
+        methods: {
+            changePost(index){
+                if (index>=v.postArr.length || index <0){
+                    return
+                }
+                this.commentsLoaded=false
+                v.currentIndex=index
+                v.post=v.postArr[v.currentIndex]
+                this.getComments()
+            },
+            reg(){
+                location.href="/reg.html"
+            },
+            login() {
+                location.href="/login.html"
+            },
+            logout(){
+                axios.get("/user/logout")
+                v.user.id=null
+                location.href="/index.html"
+            },
+            getComments(){
+                axios.get(`/comments/post/${this.post.id}`).then(response => {
+                    this.comments = response.data;
+                    this.transformComments()
+                })
+            },
+            transformComments(){
+                let topLevelComments = this.comments.filter(comment => comment.parentId === null);
+                // 映射每个一级评论及其回复
+                this.comments=topLevelComments.map(topComment => {
+                    // 找到该一级评论的所有回复
+                    let replies = this.comments.filter(comment => comment.parentId === topComment.id);
+                    // 映射成期望的格式
+                    return {
+                        id: topComment.id,
+                        author: `用户${topComment.userId}`, // 替换为实际的作者逻辑
+                        content: topComment.content,
+                        showReplies: true,
+                        replies: replies.map(reply => ({
+                            id: reply.id,
+                            author: `用户${reply.userId}`, // 替换为实际的作者逻辑
+                            content: reply.content
+                        }))
+                    };
+                })
+                this.commentsLoaded=true
+                console.log(this.comments); // 输出格式化后的评论数组
+            },
+            handleCommentSubmission(commentData) {
+                // 在这里处理提交评论的逻辑
+                const { commentToReply, commentContent } = commentData;
+                // 可以在这里将 commentToReply 和 commentContent 存入父组件的数据中，或者进行其他处理
+                alert('提交评论：', commentToReply, commentContent);
+            }
+        },
+        created: async function () {
+            let id = location.search.split("=")[1];
+            // 第一个请求，获取帖子详情
+            let response1 = await axios.get("/post/select/id?id=" + id);
+            this.post = response1.data;
+            // 如果获取到的帖子 id 为空，跳转到首页
+            if (!this.post.id) {
+                location.href = "/index.html";
+                return;
+            }
+
+            axios.get("/user/getsession").then(function (response){
+                v.user = response.data;
+            })
+            axios.get("/post/select").then(function (response) {
+                v.postArr = response.data;
+                for (let i = 0; i < v.postArr.length; i++) {
+                    if (v.postArr[i].id === v.post.id) {
+                        v.currentIndex = i;
+                        return
+                    }
+                }
+            })
+            this.getComments()
+        }
+    })
+</script>
+<canvas class="fireworks" style="position:fixed;left:0;top:0;z-index:99999999;pointer-events:none;"></canvas>
+<script type="text/javascript" src="js/djtx.js"></script>
+</body>
+</html>

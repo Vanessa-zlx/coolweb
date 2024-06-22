@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.15.9/theme-chalk/index.css">
+    <style>
+        body {
+            background-image: url("imgs/bg.jpg");
+            overflow-x: hidden !important;
+        }
+        .center {
+            width: 1200px;
+            margin: 0 auto;
+        }
+        #side {
+            float: left;
+            height: 100%; /* 全高：如果你想要 "auto" 高度，请删除它 */
+            position: fixed; /* 固定侧边栏（滚动时保持原位）*/
+            z-index: 1; /* 保持领先 */
+            top: 250px; /* 保持在顶部 */
+            left: 0;
+            overflow-x: hidden; /* 禁用水平滚动 */
+            padding-top: 20px;
+        }
+        a {
+            text-decoration: none;
+            cursor:url('imgs/pointer.cur'), auto;
+        }
+        body {
+            cursor:url('imgs/default.cur'), auto;
+        }
+
+        #menu {
+            height: 70%;
+            position: fixed;
+            background-color: rgba(74, 154, 71, 0.5);
+            width: 220px;
+            transition: 1000ms all cubic-bezier(0.19, 1, 0.22, 1);
+            transform: translateX(-100%);
+            left: 60px;
+        }
+
+        #menu.expanded {
+            transform: translateX(0%);
+            left: 0px;
+        }
+
+        .menu-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        #blob {
+            top: 0;
+            z-index: -1;
+            right: 60px;
+            transform: translateX(100%);
+            height: 100%;
+            position: absolute;
+        }
+
+        #blob-path {
+            height: 100%;
+            fill:  seagreen;
+        }
+
+        .hamburger {
+            right: 20px;
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+        }
+
+        .hamburger .line {
+            width: 100%;
+            height: 4px;
+            /*background-color: #000;*/
+            position: absolute;
+        }
+
+        .hamburger .line:nth-child(2) {
+            top: 50%;
+            margin-top: -2px;
+        }
+
+        .hamburger .line:nth-child(3) {
+            bottom: 0;
+        }
+
+        h1 {
+            position: fixed;
+            right: 0;
+            margin: 0;
+        }
+
+        ul {
+            padding: 0;
+            list-style: none;
+            width: 80%;
+            margin-left: 10%;
+            position: absolute;
+            top: 10px;
+        }
+
+        ul li {
+            color: #fff;
+            font-family: sans-serif;
+            padding: 20px 0;
+        }
+
+
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header height="80px">
+            <div class="center" style="width: 1550px; ">
+                <el-row gutter="20" style="background-color: #f9f9f9;border-radius: 25px">
+                    <el-col span="4">
+                        <a href="/">
+                            <img src="imgs/icon.png" height="65" alt="">
+                        </a>
+                    </el-col>
+
+                    <el-col span="10">
+                        <el-menu mode="horizontal" :default-active="activeIndex" @select="handleSelect" active-text-color="orange">
+                            <el-menu-item index="0"><a href="index.html">
+                                <svg t="1718888348054" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1528" width="32" height="32"><path d="M924.376537 452.433346 588.304362 97.607038c-20.88568-22.030759-48.796356-34.152844-78.719876-34.152844s-57.833173 12.123109-78.719876 34.152844L94.793458 452.433346c-34.675754 36.619012-30.211069 68.283176-24.475438 81.496106 4.087085 9.385764 17.876136 35.175127 57.621349 35.175127l49.251727 0 0 272.955672c0 61.980633 43.87937 120.329553 106.222253 120.329553l56.532551 0 86.546122 0 0-64.145949L426.492022 673.509441c0-30.968315-4.632507-48.221258 26.562982-48.221258l56.531528 0 56.530504 0c31.195489 0 26.562982 17.252943 26.562982 48.221258l0 224.734414 0 64.145949 86.532819 0 56.546877 0c62.34186 0 106.222253-58.348919 106.222253-120.329553L841.981968 569.104579l49.251727 0c39.744189 0 53.534264-25.789363 57.621349-35.175127C954.588629 520.716522 959.053314 489.052359 924.376537 452.433346zM891.231649 512.920976l-42.411949 0L820.562123 512.920976l-33.978882 0 0 329.139276c0 30.968315-19.677155 64.144926-50.825572 64.144926l-87.683015 0L648.074653 673.509441c0-61.96426-19.584034-104.404862-81.959663-104.404862l-56.530504 0-56.531528 0c-62.388932 0-81.95864 42.441625-81.95864 104.404862l0 232.695736-87.681992 0c-31.16479 0-50.825572-33.17661-50.825572-64.144926L232.586754 512.920976 198.606849 512.920976l-28.256554 0-42.411949 0c-0.983397 0-1.87572-3.866051-2.677992-3.921309 1.906419-3.403516 5.205559-12.016685 10.701736-17.806551l336.100828-354.573551c10.034541-10.619872 24.218588-17.118889 37.959543-16.983813 13.727653-0.135076 27.049053 6.363941 37.083593 16.983813l336.100828 354.573551c5.479805 5.79089 8.795317 14.403035 10.701736 17.806551C893.106346 509.054925 892.215046 512.920976 891.231649 512.920976z" fill="#272636" p-id="1529"></path></svg>
+                                首页</a></el-menu-item>
+                            <el-menu-item index="1"><a href="gkindex.html">
+                                <svg t="1718887954847" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3577" width="32" height="32"><path d="M256 85.333333h512c64.8 0 117.333333 52.533333 117.333333 117.333334v618.666666c0 64.8-52.533333 117.333333-117.333333 117.333334H256c-64.8 0-117.333333-52.533333-117.333333-117.333334V202.666667c0-64.8 52.533333-117.333333 117.333333-117.333334z m0 64a53.333333 53.333333 0 0 0-53.333333 53.333334v618.666666a53.333333 53.333333 0 0 0 53.333333 53.333334h512a53.333333 53.333333 0 0 0 53.333333-53.333334V202.666667a53.333333 53.333333 0 0 0-53.333333-53.333334H256z m170.666667 618.666667a32 32 0 0 1 0-64h170.666666a32 32 0 0 1 0 64H426.666667z" fill="#000000" p-id="3578"></path></svg>
+                                手办</a></el-menu-item>
+                            <el-menu-item index="2"><a href="https://www.osnode.cn/">
+                                <svg t="1718888010056" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7367" width="32" height="32"><path d="M890.175 510.476c-3.608 209.441-169.818 375.647-379.258 379.254-209.452 3.608-375.736-175.244-379.25-379.254-3.607-209.452 175.24-375.74 379.25-379.254 209.456-3.608 375.744 175.24 379.258 379.254 0.683 39.616 62.184 39.681 61.5 0C947.747 282.367 779.11 99.223 553.72 71.928 327.607 44.547 119.133 213.131 77.33 431.658 34.671 654.637 177.98 870.915 391.534 934.87c218.948 65.57 446.011-61.138 530.682-266.08 20.6-49.863 28.536-104.69 29.459-158.315 0.683-39.68-60.818-39.614-61.5 0.001z" p-id="7368"></path><path d="M506.967 675.328L650.08 532.22c11.847-11.847 11.847-31.641 0-43.488l-143.112-143.11c-28.067-28.067-71.554 15.42-43.487 43.487L606.59 532.22v-43.487L463.48 631.84c-28.067 28.068 15.42 71.555 43.487 43.488z" p-id="7369"></path></svg>友站</a></el-menu-item>
+                        </el-menu>
+                    </el-col>
+
+                    <el-col span="6">
+                        <el-input style="margin-top: 15px" v-model="wd" @keydown.native.enter="search()" placeholder="请输入搜索的关键字">
+                            <el-button slot="append" @click="search()" icon="el-icon-search"></el-button>
+                        </el-input>
+                    </el-col>
+
+                    <el-col span="2">
+                        <el-popover v-if="!user.id"
+                                    placement="top-start"
+                                    title="欢迎来到Cool web!"
+                                    width="200"
+                                    trigger="hover">
+                            <div slot="reference">
+                                <i class="el-icon-user"
+                                   style="font-size: 30px;position: relative;top: 20px"></i>
+                            </div>
+                            <el-button style="background-color: orange" @click="reg()">注册</el-button>
+                            <el-button style="background-color: orange" @click="login()">登录</el-button>
+                        </el-popover>
+                        <el-popover v-else
+                                    placement="top-start"
+                                    title="欢迎来到ACG导航!"
+                                    width="200"
+                                    trigger="hover">
+                            <div slot="reference">
+                                <i class="el-icon-user"
+                                   style="font-size: 30px;position: relative;top: 20px"></i>
+                            </div>
+                            <div style="text-align: center">
+                                <a href="/personal.html">
+                                    <el-avatar :src="user.avatarUrl">
+                                    </el-avatar>
+                                </a>
+                                <hr>
+                                <a href="/personal.html">个人中心</a>
+                                <a href="javascript:void(0)" @click="logout()">退出登录</a><br>
+                                <a v-if="user.admin == true" href="/admin.html">后台管理页面</a>
+                            </div>
+                        </el-popover>
+                    </el-col>
+
+                </el-row>
+            </div>
+        </el-header>
+
+        <el-aside>
+            <my-aside></my-aside>
+        </el-aside>
+
+        <el-main class="center">
+            <el-carousel height="600px">
+                <el-carousel-item v-for="b in bannerArr">
+                    <img :src="b.bannerUrl" width="100%" alt="" style="width:1200px; height: 600px">
+                </el-carousel-item>
+            </el-carousel>
+            <!--走马灯结束-->
+            <!--开始-->
+            <el-row style="background-color: white;border-radius: 25px">
+                <el-col span="3">
+                    <p style="font-size: 28px;line-height: 65px;margin: 0">Cool web</p >
+                </el-col>
+            </el-row>
+            <!--列表开始-->
+            <el-row gutter="20">
+                <el-col v-for="p in postArr" span="24">
+                    <el-card style="margin: 10px 0; height: 240px" shadow="hover">
+                        <span   style="width: 300px; margin-left: 125px">
+                            <a style="color: #333;text-decoration: none"
+                               v-show="p.postCover!=null"
+                               :href="'/postDetail.html?id='+p.id">
+                                <img :src="p.postCover" width="300" height="200" alt="文章">
+<!--                                <img :src="'https://c-ssl.duitang.com/uploads/item/201504/23/20150423H1825_usALr.jpeg'" width="300" height="200" alt="">-->
+                            </a>
+                        </span>
+                        <span style="
+                        margin-left: 50px;  height: 200px; width: 700px;
+                        position: absolute;"
+                        >
+                            <a :href="'/postDetail.html?id='+p.id">
+                                <el-row style="position:absolute;">
+                                <el-col style="font-family: BlinkMacSystemFont ;
+                                width: 500px;font-size: 24px; color: #3c4858">{{p.postTitle}}</el-col>
+                                <el-col style="position: absolute; top: 35px">
+                                    <div id="brief" style="font-size: 16px; color: #718096; height: 80px">{{p.postBrief}}</div>
+                                    <div style="margin-top: 20px">
+                                        <i class="el-icon-date">{{p.postDate}}</i>
+                                    </div>
+<!--                                    <div style="font-size: 16px; color: #718096; margin-top: 20px">-->
+<!--                                        <i class="el-icon-shopping-bag-1">恋爱</i>-->
+<!--                                    </div>-->
+                                </el-col>
+                            </el-row>
+                            </a>
+                        </span>
+                    </el-card>
+                </el-col>
+            </el-row>
+            <div style="text-align: center;margin-bottom: 20px">
+                <el-button @click="location.href='/contentList.html?type=1'">点击查看更多</el-button>
+            </div>
+        </el-main>
+
+        <el-footer>
+            <my-footer></my-footer>
+        </el-footer>
+    </el-container>
+</div>
+
+<script src="js/vue.js"></script>
+<script src="js/element-ui_2.15.9_index.js"></script>
+<script src="js/eui.js"></script>
+<script src="js/axios.min.js"></script>
+<script src="js/my-header.js"></script>
+<script src="js/my-footer.js"></script>
+<script src="js/my-aside.js"></script>
+<script src='js/jquery-1.12.4.min.js'></script>
+<script>
+    $(window).load(function(){
+        var height = window.innerHeight,
+            x= 0, y= height/2,
+            curveX = 10,
+            curveY = 0,
+            targetX = 0,
+            xitteration = 0,
+            yitteration = 0,
+            menuExpanded = false;
+
+        blob = $('#blob'),
+            blobPath = $('#blob-path'),
+
+            hamburger = $('.hamburger');
+
+        $(this).on('mousemove', function(e){
+            x = e.pageX;
+
+            y = e.pageY-50;
+        });
+        $('.hamburger, .menu-inner').on('mouseenter', function(){
+            $(this).parent().addClass('expanded');
+            menuExpanded = true;
+        });
+        $('.menu-inner').on('mouseleave', function(){
+            menuExpanded = false;
+            $(this).parent().removeClass('expanded');
+        });
+        function easeOutExpo(currentIteration, startValue, changeInValue, totalIterations) {
+            return changeInValue * (-Math.pow(2, -10 * currentIteration / totalIterations) + 1) + startValue;
+        }
+
+        var hoverZone = 150;
+        var expandAmount = 20;
+
+        function svgCurve() {
+            if ((curveX > x-1) && (curveX < x+1)) {
+                xitteration = 0;
+            } else {
+                if (menuExpanded) {
+                    targetX = 0;
+                } else {
+                    xitteration = 0;
+                    if (x > hoverZone) {
+                        targetX = 0;
+                    } else {
+                        targetX = -(((60+expandAmount)/100)*(x-hoverZone));
+                    }
+                }
+                xitteration++;
+            }
+
+            if ((curveY > y-1) && (curveY < y+1)) {
+                yitteration = 0;
+            } else {
+                yitteration = 0;
+                yitteration++;
+            }
+
+            curveX = easeOutExpo(xitteration, curveX, targetX-curveX, 100);
+            curveY = easeOutExpo(yitteration, curveY, y-curveY, 100);
+
+            var anchorDistance = 200;
+            var curviness = anchorDistance - 40;
+
+            var newCurve2 = "M60,"+height+"H0V0h60v"+(curveY-anchorDistance)+"c0,"+curviness+","+curveX+","+curviness+","+curveX+","+anchorDistance+"S60,"+(curveY)+",60,"+(curveY+(anchorDistance*2))+"V"+height+"z";
+
+            blobPath.attr('d', newCurve2);
+
+            blob.width(curveX+60);
+
+            hamburger.css('transform', 'translate('+curveX+'px, '+curveY+'px)');
+
+
+            window.requestAnimationFrame(svgCurve);
+        }
+
+        window.requestAnimationFrame(svgCurve);
+
+    });
+</script>
+<script>
+    $(window).load(function(){
+        var height = window.innerHeight,
+            x= 0, y= height/2,
+            curveX = 10,
+            curveY = 0,
+            targetX = 0,
+            xitteration = 0,
+            yitteration = 0,
+            menuExpanded = false;
+
+        blob = $('#blob'),
+            blobPath = $('#blob-path'),
+
+            hamburger = $('.hamburger');
+
+        $(this).on('mousemove', function(e){
+            x = e.pageX;
+
+            y = e.pageY-50;
+        });
+        $('.hamburger, .menu-inner').on('mouseenter', function(){
+            $(this).parent().addClass('expanded');
+            menuExpanded = true;
+        });
+        $('.menu-inner').on('mouseleave', function(){
+            menuExpanded = false;
+            $(this).parent().removeClass('expanded');
+        });
+        function easeOutExpo(currentIteration, startValue, changeInValue, totalIterations) {
+            return changeInValue * (-Math.pow(2, -10 * currentIteration / totalIterations) + 1) + startValue;
+        }
+
+        var hoverZone = 150;
+        var expandAmount = 20;
+
+        function svgCurve() {
+            if ((curveX > x-1) && (curveX < x+1)) {
+                xitteration = 0;
+            } else {
+                if (menuExpanded) {
+                    targetX = 0;
+                } else {
+                    xitteration = 0;
+                    if (x > hoverZone) {
+                        targetX = 0;
+                    } else {
+                        targetX = -(((60+expandAmount)/100)*(x-hoverZone));
+                    }
+                }
+                xitteration++;
+            }
+
+            if ((curveY > y-1) && (curveY < y+1)) {
+                yitteration = 0;
+            } else {
+                yitteration = 0;
+                yitteration++;
+            }
+
+            curveX = easeOutExpo(xitteration, curveX, targetX-curveX, 100);
+            curveY = easeOutExpo(yitteration, curveY, y-curveY, 100);
+
+            var anchorDistance = 200;
+            var curviness = anchorDistance - 40;
+
+            var newCurve2 = "M60,"+height+"H0V0h60v"+(curveY-anchorDistance)+"c0,"+curviness+","+curveX+","+curviness+","+curveX+","+anchorDistance+"S60,"+(curveY)+",60,"+(curveY+(anchorDistance*2))+"V"+height+"z";
+
+            blobPath.attr('d', newCurve2);
+
+            blob.width(curveX+60);
+
+            hamburger.css('transform', 'translate('+curveX+'px, '+curveY+'px)');
+
+
+            window.requestAnimationFrame(svgCurve);
+        }
+
+        window.requestAnimationFrame(svgCurve);
+
+    });
+</script>
+<script>
+    let v = new Vue({
+        el: "#app",
+        data: function (){
+            return {
+                bannerArr: [],
+                postArr: [],
+                user:{
+                    id: "",
+                    name: "",
+                    avatarUrl: "",
+                    admin: false
+                }
+            }
+        },
+        methods: {
+            reg(){
+                location.href="/reg.html"
+            },
+            login() {
+                location.href="/login.html"
+            },
+            logout(){
+                axios.get("/user/logout")
+                v.user.id=null
+                location.href="/index.html"
+            },
+        },
+        created: function (){
+            axios.get("/banner/select").then(function (response){
+                v.bannerArr = response.data;
+            })
+            axios.get("/post/select").then(function (response) {
+                v.postArr = response.data;
+                const maxLength = 30;
+                for(let i = 0;i < v.postArr.length;i++){ //省略过长标题
+                    console.log(v.postArr[i])
+                    if (v.postArr[i].postTitle.length > maxLength) {
+                        v.postArr[i].postTitle = v.postArr[i].postTitle.substring(0, maxLength) + " ...";
+                    }
+                }
+            })
+            axios.get("/user/getsession").then(function (response){
+                v.user = response.data;
+            })
+        }
+    })
+</script>
+<canvas class="fireworks" style="position:fixed;left:0;top:0;z-index:99999999;pointer-events:none;"></canvas>
+<script type="text/javascript" src="js/djtx.js"></script>
+</body>
+</html>
+
+
+
+
+
+<!--        <el-header height="80px">-->
+<!--            <div class="center" style="width: 1550px; ">-->
+<!--                <el-row gutter="20" style="background-color: #f9f9f9;border-radius: 25px">-->
+<!--                    <el-col span="4">-->
+<!--                        <a href="/">-->
+<!--                            <img src="imgs/icon.png" height="65" alt="">-->
+<!--                        </a>-->
+<!--                    </el-col>-->
+
+<!--                    <el-col span="10">-->
+<!--                        <el-menu mode="horizontal" :default-active="activeIndex" @select="handleSelect" active-text-color="orange">-->
+<!--                            <el-menu-item index="0"><a href="index.html">-->
+<!--                                <svg t="1718888348054" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1528" width="32" height="32"><path d="M924.376537 452.433346 588.304362 97.607038c-20.88568-22.030759-48.796356-34.152844-78.719876-34.152844s-57.833173 12.123109-78.719876 34.152844L94.793458 452.433346c-34.675754 36.619012-30.211069 68.283176-24.475438 81.496106 4.087085 9.385764 17.876136 35.175127 57.621349 35.175127l49.251727 0 0 272.955672c0 61.980633 43.87937 120.329553 106.222253 120.329553l56.532551 0 86.546122 0 0-64.145949L426.492022 673.509441c0-30.968315-4.632507-48.221258 26.562982-48.221258l56.531528 0 56.530504 0c31.195489 0 26.562982 17.252943 26.562982 48.221258l0 224.734414 0 64.145949 86.532819 0 56.546877 0c62.34186 0 106.222253-58.348919 106.222253-120.329553L841.981968 569.104579l49.251727 0c39.744189 0 53.534264-25.789363 57.621349-35.175127C954.588629 520.716522 959.053314 489.052359 924.376537 452.433346zM891.231649 512.920976l-42.411949 0L820.562123 512.920976l-33.978882 0 0 329.139276c0 30.968315-19.677155 64.144926-50.825572 64.144926l-87.683015 0L648.074653 673.509441c0-61.96426-19.584034-104.404862-81.959663-104.404862l-56.530504 0-56.531528 0c-62.388932 0-81.95864 42.441625-81.95864 104.404862l0 232.695736-87.681992 0c-31.16479 0-50.825572-33.17661-50.825572-64.144926L232.586754 512.920976 198.606849 512.920976l-28.256554 0-42.411949 0c-0.983397 0-1.87572-3.866051-2.677992-3.921309 1.906419-3.403516 5.205559-12.016685 10.701736-17.806551l336.100828-354.573551c10.034541-10.619872 24.218588-17.118889 37.959543-16.983813 13.727653-0.135076 27.049053 6.363941 37.083593 16.983813l336.100828 354.573551c5.479805 5.79089 8.795317 14.403035 10.701736 17.806551C893.106346 509.054925 892.215046 512.920976 891.231649 512.920976z" fill="#272636" p-id="1529"></path></svg>首页</a></el-menu-item>-->
+<!--                            <el-menu-item index="1"><a href="gkindex.html">-->
+<!--                                <svg t="1718887954847" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3577" width="32" height="32"><path d="M256 85.333333h512c64.8 0 117.333333 52.533333 117.333333 117.333334v618.666666c0 64.8-52.533333 117.333333-117.333333 117.333334H256c-64.8 0-117.333333-52.533333-117.333333-117.333334V202.666667c0-64.8 52.533333-117.333333 117.333333-117.333334z m0 64a53.333333 53.333333 0 0 0-53.333333 53.333334v618.666666a53.333333 53.333333 0 0 0 53.333333 53.333334h512a53.333333 53.333333 0 0 0 53.333333-53.333334V202.666667a53.333333 53.333333 0 0 0-53.333333-53.333334H256z m170.666667 618.666667a32 32 0 0 1 0-64h170.666666a32 32 0 0 1 0 64H426.666667z" fill="#000000" p-id="3578"></path></svg>-->
+<!--                                手办</a></el-menu-item>-->
+<!--                            <el-menu-item index="2"><a href="https://www.osnode.cn/">-->
+<!--                                <svg t="1718888010056" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7367" width="32" height="32"><path d="M890.175 510.476c-3.608 209.441-169.818 375.647-379.258 379.254-209.452 3.608-375.736-175.244-379.25-379.254-3.607-209.452 175.24-375.74 379.25-379.254 209.456-3.608 375.744 175.24 379.258 379.254 0.683 39.616 62.184 39.681 61.5 0C947.747 282.367 779.11 99.223 553.72 71.928 327.607 44.547 119.133 213.131 77.33 431.658 34.671 654.637 177.98 870.915 391.534 934.87c218.948 65.57 446.011-61.138 530.682-266.08 20.6-49.863 28.536-104.69 29.459-158.315 0.683-39.68-60.818-39.614-61.5 0.001z" p-id="7368"></path><path d="M506.967 675.328L650.08 532.22c11.847-11.847 11.847-31.641 0-43.488l-143.112-143.11c-28.067-28.067-71.554 15.42-43.487 43.487L606.59 532.22v-43.487L463.48 631.84c-28.067 28.068 15.42 71.555 43.487 43.488z" p-id="7369"></path></svg>友站</a></el-menu-item>-->
+<!--                        </el-menu>-->
+<!--                    </el-col>-->
+
+<!--                    <el-col span="6">-->
+<!--                        <el-input style="margin-top: 15px" v-model="wd" @keydown.native.enter="search()" placeholder="请输入搜索的关键字">-->
+<!--                            <el-button slot="append" @click="search()" icon="el-icon-search"></el-button>-->
+<!--                        </el-input>-->
+<!--                    </el-col>-->
+
+<!--                    <el-col span="2">-->
+<!--                        <el-popover v-if="user.id==null"-->
+<!--                                    placement="top-start"-->
+<!--                                    title="欢迎来到ACG导航!"-->
+<!--                                    width="200"-->
+<!--                                    trigger="hover">-->
+<!--                            <div slot="reference">-->
+<!--                                <i class="el-icon-user"-->
+<!--                                   style="font-size: 30px;position: relative;top: 20px"></i>-->
+<!--                            </div>-->
+<!--                            <el-button style="background-color: orange" @click="reg()">注册</el-button>-->
+<!--                            <el-button style="background-color: orange" @click="login()">登录</el-button>-->
+<!--                        </el-popover>-->
+<!--                        <el-popover v-else-->
+<!--                                    placement="top-start"-->
+<!--                                    title="欢迎来到ACG导航!"-->
+<!--                                    width="200"-->
+<!--                                    trigger="hover">-->
+<!--                            <div slot="reference">-->
+<!--                                <i class="el-icon-user"-->
+<!--                                   style="font-size: 30px;position: relative;top: 20px"></i>-->
+<!--                            </div>-->
+<!--                            <div style="text-align: center">-->
+<!--                                <a href="/personal.html">-->
+<!--                                    <el-avatar :src="user.avatarUrl">-->
+<!--                                    </el-avatar>-->
+<!--                                </a>-->
+<!--                                <hr>-->
+<!--                                <a href="/personal.html">个人中心</a>-->
+<!--                                <a href="javascript:void(0)" @click="logout()">退出登录</a><br>-->
+<!--                                <a v-if="user.admin == true" href="/admin.html">后台管理页面</a>-->
+<!--                            </div>-->
+<!--                        </el-popover>-->
+<!--                    </el-col>-->
+
+<!--                </el-row>-->
+<!--            </div>-->
+<!--        </el-header>-->

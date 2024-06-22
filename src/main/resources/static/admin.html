@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.15.9/theme-chalk/index.css">
+    <!--引入富文本编辑器相关样式文件-->
+    <link href="https://cdn.staticfile.org/wangeditor5/5.1.23/css/style.min.css" rel="stylesheet">
+    <style>
+        body {
+            cursor:url('imgs/default.cur'), auto;
+        }
+        a {
+            cursor:url('imgs/pointer.cur'), auto;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header height="70px" style="background-color: #386582">
+            <h1 style="color: white;font-size: 30px;margin: 0;
+                            line-height: 70px">
+                ACG后台管理系统
+                <span style="font-size: 20px;float: right">欢迎{{user.nickname}}回来!
+                    <a href="" style="color: orange">退出登录</a>
+                </span>
+            </h1>
+        </el-header>
+        <el-container>
+            <el-aside width="200px">
+                <el-menu @select="handleSelect" default-active="1" style="height: 1000px" active-text-color="orange">
+                    <a href="index.html">
+                        <img src="imgs/icon.png" width="150px">
+                    </a>
+                    <el-divider></el-divider>
+                    <el-menu-item index="1">
+                        <template slot="title">
+                            <i class="el-icon-user"></i><span>用户管理</span>
+                        </template>
+                    </el-menu-item>
+                    <el-menu-item index="2">
+                        <template slot="title">
+                            <i class="el-icon-picture"></i><span>轮播图</span>
+                        </template>
+                    </el-menu-item>
+                    <el-menu-item index="3">
+                        <template slot="title">
+                            <i class="el-icon-s-order"></i><span>用户稿件</span>
+                        </template>
+                    </el-menu-item>
+                </el-menu>
+
+            </el-aside>
+            <el-main>
+                <!--用户表格开始-->
+                <el-table v-if="currentIndex == 1" :data="userArr">
+                    <el-table-column type="id" label="编号"></el-table-column>
+                    <el-table-column prop="name" label="用户名"></el-table-column>
+                    <el-table-column prop="nickname" label="昵称"></el-table-column>
+                    <el-table-column label="头像">
+                        <template slot-scope="scope">
+                            <el-avatar :src="scope.row.url"></el-avatar>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="管理员">
+                        <template slot-scope="scope">
+                            <el-switch v-model="scope.row.isAdmin"></el-switch>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="userRegistered" label="创建时间"></el-table-column>
+                    <el-table-column label="删除">
+                        <template slot-scope="scope">
+                            <!--scope代表是每行对应的数据的index属性的下标，有row属性，可以把整个一行当做对象返回-->
+                            <el-popconfirm @confirm="userdelete(scope.$index, scope.row)"
+                                           title="这段内容确定要删除吗？">
+                                <el-button size="mini" type="danger" slot="reference">删除</el-button>
+                            </el-popconfirm>
+                        </template>
+                    </el-table-column>
+
+                </el-table>
+                <!--用户表格结束-->
+                <!--轮播图表格开始-->
+                <el-table v-if="currentIndex === 2" :data="bannerArr">
+                    <el-table-column type="index" label="编号"></el-table-column>
+                    <el-table-column label="轮播图">
+                        <template slot-scope="scope">
+                            <!--                            <img :src="scope.row.imgUrl" width="200px">-->
+                            <img :src="scope.row.bannerUrl" width="200px" alt="img">
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作">
+                        <template slot-scope="scope">
+                            <el-popconfirm @confirm="bannerdelete(scope.$index, scope.row)"
+                                           title="这段内容确定要删除吗？"     >
+                                <el-button size="mini" type="danger" slot="reference">删除</el-button>
+                            </el-popconfirm>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <!--轮播图表格结束-->
+                <!--内容表格开始-->
+                <el-table v-if="currentIndex>2" :data="postArr" border>
+                    <el-table-column label="标题" width="150px"
+                                     prop="postTitle" align="center"></el-table-column>
+                    <el-table-column label="封面" width="60px">
+                        <template slot-scope="scope">
+                            <img :src="scope.row.postCover" width="50px">
+                        </template>
+
+                    </el-table-column>
+                    <el-table-column label="摘要" width="300px"
+                                     prop="postBrief" align="center"></el-table-column>
+                    <el-table-column label="类型"
+                                     prop="categoryName" align="center"></el-table-column>
+                    <el-table-column label="浏览量"
+                                     prop="viewCount" align="center"></el-table-column>
+                    <el-table-column label="回复量"
+                                     prop="commentCount" align="center"></el-table-column>
+                    <el-table-column label="创建时间"
+                                     prop="postDate" align="center"></el-table-column>
+                    <el-table-column label="操作" width="200px" fixed="right"
+                                     align="center">
+                        <template slot-scope="scope">
+                            <el-button size="mini" type="success"
+                                       @click="postedit(scope.$index, scope.row)">编辑
+                            </el-button>
+                            <el-button size="mini" type="danger"
+                                       @click="postdelete(scope.$index, scope.row)">删除
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <!--内容表格结束-->
+            </el-main>
+
+        </el-container>
+    </el-container>
+</div>
+</body>
+
+<script src="js/vue.js"></script>
+<script src="js/element-ui_2.15.9_index.js"></script>
+<script src="js/axios.min.js"></script>
+<script src="js/my-header.js"></script>
+<script src="js/my-footer.js"></script>
+<script>
+    let v = new Vue({
+        el: '#app',
+        data: function () {
+            return {
+                user: {
+                    name: "",
+                    nickname: "",
+                    admin: false
+                },
+                userArr: [],
+                bannerArr: [],
+                postArr: [],
+                currentIndex: "1"
+            }
+        },
+        created:function (){
+            /*页面一刷新，一创造，就立马执行下面的语句*/
+            axios.get("/user/getsession").then(function (response){
+                v.user = response.data;
+                if (v.user.id==null){
+                    alert("请登录后使用")
+                    location.href="login.html"
+                }else if (!v.user.admin){
+                    alert("普通用户无权访问")
+                    location.href="personal.html"
+                }
+            })
+            axios.get("/user/select").then(function (response){
+                v.userArr=response.data;
+            })
+            axios.get("/banner/select").then(function (response){
+                v.bannerarr=response.data;
+            })
+            axios.get("/post/select").then(function (response){
+                v.postArr = response.data;
+            })
+        },
+        methods: {
+            userdelete(index, user) {
+                axios.get("/user/delete?id=" + user.id).then(function () {
+                    v.userArr.splice(index, 1)       /*splice(下标，长度)表示从集合里面删除index下标这个元素*/
+                })
+            },
+            bannerdelete(index, banner) {
+                axios.get("/banner/delete?id=" + banner.id).then(function () {
+                    v.bannerArr.splice(index, 1)
+                })
+            },
+            /*---------------------------------*/
+            postdelete(index, post) {
+                axios.get("/post/delete?id=" + post.id).then(function () {
+                    v.postArr.splice(index, 1)
+                })
+            },
+            // postedit(index, post) {
+            //     axios.get("/post/update?id=" + post.id).then(function () {
+            //         v.productarr.splice(index, 1)
+            //     })
+            // },
+            handleSelect(key, keyPath) {
+                //key就是点击菜单项的index值
+                v.currentIndex = key;
+            }
+        }
+    })
+</script>
+<canvas class="fireworks" style="position:fixed;left:0;top:0;z-index:99999999;pointer-events:none;"></canvas>
+<script type="text/javascript" src="js/djtx.js"></script>
+</html>
