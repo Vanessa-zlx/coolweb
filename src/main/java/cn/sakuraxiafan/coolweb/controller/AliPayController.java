@@ -86,7 +86,7 @@ public class AliPayController {
             return;
         }
         System.out.println(alipayConfig);
-        AlipayClient alipayClient = new DefaultAlipayClient(alipayConfig.getGatewayUrl(), "9021000138652520",
+        AlipayClient alipayClient = new DefaultAlipayClient(alipayConfig.getGatewayUrl(), "",
                 alipayConfig.getAppPrivateKey(), FORMAT, CHARSET, alipayConfig.getAlipayPublicKey(), SIGN_TYPE);
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
         request.setNotifyUrl("http://2a935m.natappfree.cc/alipay/notify");
