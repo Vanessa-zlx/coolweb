@@ -17,17 +17,15 @@
 </head>
 <body>
 <div id="app">
-    <el-container>
-        <el-header height="70px" style="background-color: #386582">
-            <h1 style="color: white;font-size: 30px;margin: 0;
-                            line-height: 70px">
-                ACG后台管理系统
-                <span style="font-size: 20px;float: right">欢迎{{user.nickname}}回来!
-                    <a href="" style="color: orange">退出登录</a>
-                </span>
-            </h1>
+    <el-container v-if="user.admin">
+
+
+        <el-header height="80px">
+            <my-header :user="user" @reg="handleReg"
+                       @logout="handleLogout" @login="handleLogin"></my-header>
         </el-header>
-        <el-container>
+
+        <el-container v-if="user.id">
             <el-aside width="200px">
                 <el-menu @select="handleSelect" default-active="1" style="height: 1000px" active-text-color="orange">
                     <a href="index.html">
@@ -153,7 +151,7 @@
                 user: {
                     name: "",
                     nickname: "",
-                    admin: false
+                    admin: false,
                 },
                 userArr: [],
                 bannerArr: [],
@@ -161,8 +159,41 @@
                 currentIndex: "1"
             }
         },
+        methods: {
+            userdelete(index, user) {
+                axios.get("/user/delete?id=" + user.id).then(function () {
+                    v.userArr.splice(index, 1)       /*splice(下标，长度)表示从集合里面删除index下标这个元素*/
+                })
+            },
+            bannerdelete(index, banner) {
+                axios.get("/banner/delete?id=" + banner.id).then(function () {
+                    v.bannerArr.splice(index, 1)
+                })
+            },
+            postdelete(index, post) {
+                axios.get("/post/delete?id=" + post.id).then(function () {
+                    v.postArr.splice(index, 1)
+                })
+            },
+            // postedit(index, post) {
+            //     axios.get("/post/update?id=" + post.id).then(function () {
+            //         v.productarr.splice(index, 1)
+            //     })
+            // },
+            handleSelect(key, keyPath) {
+                //key就是点击菜单项的index值
+                v.currentIndex = key;
+            },
+
+            handleReg(){},/*不会执行*/
+            handleLogin(){},/*不会执行*/
+            handleLogout(){
+                axios.get("/user/logout")
+                v.user.id=null
+                location.href="index.html"
+            },
+        },
         created:function (){
-            /*页面一刷新，一创造，就立马执行下面的语句*/
             axios.get("/user/getsession").then(function (response){
                 v.user = response.data;
                 if (v.user.id==null){
@@ -182,33 +213,6 @@
             axios.get("/post/select").then(function (response){
                 v.postArr = response.data;
             })
-        },
-        methods: {
-            userdelete(index, user) {
-                axios.get("/user/delete?id=" + user.id).then(function () {
-                    v.userArr.splice(index, 1)       /*splice(下标，长度)表示从集合里面删除index下标这个元素*/
-                })
-            },
-            bannerdelete(index, banner) {
-                axios.get("/banner/delete?id=" + banner.id).then(function () {
-                    v.bannerArr.splice(index, 1)
-                })
-            },
-            /*---------------------------------*/
-            postdelete(index, post) {
-                axios.get("/post/delete?id=" + post.id).then(function () {
-                    v.postArr.splice(index, 1)
-                })
-            },
-            // postedit(index, post) {
-            //     axios.get("/post/update?id=" + post.id).then(function () {
-            //         v.productarr.splice(index, 1)
-            //     })
-            // },
-            handleSelect(key, keyPath) {
-                //key就是点击菜单项的index值
-                v.currentIndex = key;
-            }
         }
     })
 </script>

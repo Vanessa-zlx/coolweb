@@ -11,7 +11,7 @@ public interface PostCommentService {
 
     List<PostComment> getCommentsByParentId(int parentId);
 
-    void addComment(PostComment postComment);
+    int addComment(PostComment postComment);
 
     void updateComment(PostComment postComment);
 

@@ -60,12 +60,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public int register(User user) {
         /*isAmdin*/
-
+        System.out.println(user);
         user.setAdmin(false);
         User res = selectUser(user.getName());  //userLogin值唯一
-        if (res == null && userMapper.insertUser(user) > 0) {
+        int ret = userMapper.insertUser(user);
+        if (res == null && ret > 0) {
             return 1;
         } else {
+            System.out.println("ret: "+ ret);
             return 0;
         }
     }
@@ -81,12 +83,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public int updateUser(User user, HttpSession session) {
-        /*?  */
-        User u = userMapper.selectByUserName(user.getName());
-        if (u != null && u.getPassword().equals(user.getPassword())) {
+        User currentUser = (User) session.getAttribute("user");/*获取当前登录用户*/
+        User res = userMapper.selectByUserName(user.getName());/*获取要修改的原用户数据*/
+        if (!res.getName().equals(user.getName())/*修改其他人的信息*/
+                && !currentUser.isAdmin()) {/*但不是admin却*/
+            return 0;
+        }else {/*修改自己的信息 要校验密码吗？*/
+            user.setId(res.getId());
             return userMapper.updateUserInfo(user);
         }
-        return 0;
     }
 
 }

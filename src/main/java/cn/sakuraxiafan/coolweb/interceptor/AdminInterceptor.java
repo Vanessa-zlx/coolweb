@@ -11,7 +11,7 @@ public class AdminInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         User user = (User) request.getSession().getAttribute("user");
-        if (!user.isAdmin()) {
+        if (user==null || !user.isAdmin()) {
             System.out.println("not allowed operation");
             response.sendRedirect("/personal.html");
             return false;

@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.15.9/theme-chalk/index.css">
     <style>
         body {
-            background-image: url("imgs/bg.jpg");
+            background-image: url("imgs/bg_green.png");
             overflow-x: hidden !important;
         }
 
@@ -59,7 +59,7 @@
 
         #blob-path {
             height: 100%;
-            fill:  lightcoral;
+            fill:  seagreen;
         }
 
         .hamburger {
@@ -130,7 +130,8 @@
     <el-container>
 
         <el-header height="80px">
-            <my-header :user="user"></my-header>
+            <my-header :user="user" @reg="handleReg"
+                       @logout="handleLogout" @login="handleLogin"></my-header>
         </el-header>
 
         <!--侧边导航栏-->
@@ -189,11 +190,11 @@
             </div>
 
             <comments :comments="comments" :user="user"
-                @submit-comment="handleCommentSubmission"></comments>
+                      @submit-comment="handleCommentSubmission"></comments>
 
         </el-main>
 
-        <el-footer>
+        <el-footer v-if="commentsLoaded">
             <my-footer></my-footer>
         </el-footer>
     </el-container>
@@ -205,6 +206,7 @@
 <script src="js/axios.min.js"></script>
 <script src="js/my-header.js"></script>
 <script src="js/my-footer.js"></script>
+<script src="js/my-aside.js"></script>
 <script src='js/jquery-1.12.4.min.js'></script>
 <script src="./js/comment.js"></script>
 
@@ -302,11 +304,8 @@
                 postArr: [],
                 post: {},
                 user:{
+                    id: null,
                     name:"",
-                    password:"",
-                    nickname:"",
-                    email:"",
-                    phone:""
                 },
                 currentIndex: 0,
 
@@ -325,24 +324,22 @@
                 if (index>=v.postArr.length || index <0){
                     return
                 }
-                this.commentsLoaded=false
-                v.currentIndex=index
-                v.post=v.postArr[v.currentIndex]
-                this.getComments()
-            },
-            reg(){
-                location.href="/reg.html"
-            },
-            login() {
-                location.href="/login.html"
-            },
-            logout(){
-                axios.get("/user/logout")
-                v.user.id=null
-                location.href="/index.html"
+                // 获取当前页面的 URL
+                let currentUrl = window.location.href;
+                // 替换 id 参数的值为 18
+                let newUrl = currentUrl.replace(/(id=)\d+/, 'id='+v.postArr[index].id);
+                // 使用新的 URL 跳转到页面
+                location.href = newUrl;
+                //TODO 2024/6/24: 可以优化，不用每次都获取全部post
+
+                // this.commentsLoaded=false
+                // v.currentIndex=index
+                // v.post=v.postArr[v.currentIndex]
+                // this.getComments()
+                /*url没修改有问题*/
             },
             getComments(){
-                axios.get(`/comments/post/${this.post.id}`).then(response => {
+                axios.get(`/posts/${this.post.id}/comments`).then(response => {
                     this.comments = response.data;
                     this.transformComments()
                 })
@@ -356,24 +353,52 @@
                     // 映射成期望的格式
                     return {
                         id: topComment.id,
-                        author: `用户${topComment.userId}`, // 替换为实际的作者逻辑
+                        author: `${topComment.nickname}(${topComment.author}) ：`, // 替换为实际的作者逻辑
                         content: topComment.content,
+                        date: topComment.date,
                         showReplies: true,
                         replies: replies.map(reply => ({
                             id: reply.id,
-                            author: `用户${reply.userId}`, // 替换为实际的作者逻辑
-                            content: reply.content
-                        }))
+                            author: `${reply.nickname}(${reply.author}) 回复 ${topComment.nickname}(${topComment.author}) ：`, // 替换为实际的作者逻辑
+                            content: reply.content,
+                            date: reply.date
+                        })).sort((a, b) => new Date(a.date) - new Date(b.date))
                     };
                 })
                 this.commentsLoaded=true
                 console.log(this.comments); // 输出格式化后的评论数组
             },
+            handleReg(){
+                localStorage.setItem('redirectUrl', window.location.href);//允许注册-登录后回来
+            },
+            handleLogin(){
+                localStorage.setItem('redirectUrl', window.location.href);//允许登录后回来
+            },
+            handleLogout(){
+                console.log("handleLogout")
+                axios.get("/user/logout")
+                v.user.id=null
+                /*管理员页面需要跳转*/
+            },
             handleCommentSubmission(commentData) {
                 // 在这里处理提交评论的逻辑
                 const { commentToReply, commentContent } = commentData;
                 // 可以在这里将 commentToReply 和 commentContent 存入父组件的数据中，或者进行其他处理
-                alert('提交评论：', commentToReply, commentContent);
+                axios.post(`/posts/${this.post.id}/comments`, {
+                    postId: this.post.id,
+                    targetId: commentToReply,
+                    content: commentContent
+                }).then( response => {
+                    if (response.data === 1) {
+                        this.$message({
+                            message: '评论成功',
+                            type: 'success'
+                        })
+                        this.getComments()
+                    } else {
+                        this.$message.error("评论失败，请重试")
+                    }
+                })
             }
         },
         created: async function () {

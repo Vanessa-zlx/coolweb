@@ -1,0 +1,47 @@
+body {
+    background-image: url("../imgs/bg.jpg");
+    overflow-x: hidden !important;
+}
+.center {
+    width: 1200px;
+    margin: 0 auto;
+}
+#side {
+    float: left;
+    height: 100%; /* 全高：如果你想要 "auto" 高度，请删除它 */
+    position: fixed; /* 固定侧边栏（滚动时保持原位）*/
+    z-index: 1; /* 保持领先 */
+    top: 250px; /* 保持在顶部 */
+    left: 0;
+    overflow-x: hidden; /* 禁用水平滚动 */
+    padding-top: 20px;
+}
+a {
+    text-decoration: none;
+    cursor:url('../imgs/pointer.cur'), auto;
+}
+body {
+    cursor:url('../imgs/default.cur'), auto;
+}
+
+h1 {
+    position: fixed;
+    right: 0;
+    margin: 0;
+}
+
+ul {
+    padding: 0;
+    list-style: none;
+    width: 80%;
+    margin-left: 10%;
+    position: absolute;
+    top: 10px;
+}
+
+ul li {
+    color: #fff;
+    font-family: sans-serif;
+    padding: 20px 0;
+}
+

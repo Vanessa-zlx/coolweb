@@ -3,8 +3,6 @@ package cn.sakuraxiafan.coolweb.mapper;
 import cn.sakuraxiafan.coolweb.entity.Post;
 import org.apache.ibatis.annotations.*;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 @Mapper

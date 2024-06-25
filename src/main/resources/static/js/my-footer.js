@@ -26,15 +26,15 @@ Vue.component('my-footer', {
                     </el-col>
                     <el-col :span="12" style="text-align: center;">
                         <el-row id="footer_center" style="padding: 20px 40px">
-                            <el-col span="8">
+                            <el-col :span="8">
                                 <p>关于我们</p><p>社区交流</p>
                                 <p>我发投稿</p><p>在线反馈</p>
                             </el-col>
-                            <el-col span="8">
+                            <el-col :span="8">
                                 <p>联系我们</p><p>广告投放</p>
                                 <p>用户协议</p><p>友情链接</p>
                             </el-col>
-                            <el-col span="8">
+                            <el-col :span="8">
                                 <p>Archiver</p><p>手机版</p>
                                 <p>小黑屋</p><p>在线反馈</p>
                             </el-col>

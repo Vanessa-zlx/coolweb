@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <title>Title</title>
+</head>
+<body>
+    <div id="app">>
+        <order :orders="orders"
+        @pay="handlePay"></order>
+    </div>
+</body>
+<script src="js/vue.js"></script>
+<script src="js/element-ui_2.15.9_index.js"></script>
+<script src="js/eui.js"></script>
+<script src="js/axios.min.js"></script>
+<script src="js/order.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            orders: []
+        },
+        mounted() {
+            this.fetchOrders();
+        },
+        methods: {
+            async fetchOrders() {
+                // 使用 axios 发送 GET 请求获取订单数据
+                var response = await axios.get('/orders');
+                this.orders = response.data;
+            },
+            handlePay(order){
+                // const { tradeNo } = order;
+                // alert("即将支付"+tradeNo)
+                // const url=`http://localhost:8080/alipay/pay?tradeNo=`+tradeNo
+                // window.open(url);
+                // // window.location.href=url
+                this.$confirm('确认支付？, 是否继续?', '删除打卡信息?', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    window.open(`http://2a935m.natappfree.cc/alipay/pay?subject=${order.subject}&tradeNo=${order.tradeNo}&totalAmount=${order.totalAmount}`)
+                    this.$message.success('付款成功')
+                    this.load()
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消付款'
+                    })
+                    this.load()
+                })
+            }
+        },
+    });
+</script>
+</html>

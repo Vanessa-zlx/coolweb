@@ -8,7 +8,8 @@ import java.sql.Timestamp;
 @Data
 public class PostComment {
     private int id;
-    private int userId;
+    private String author;/*数据库是name, 前端还需要nickname*/
+    private String nickname;/*数据库是name, 前端还需要nickname*/
     private int postId;
     private Integer parentId;
     private Integer targetId;

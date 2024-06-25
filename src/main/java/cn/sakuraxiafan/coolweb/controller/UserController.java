@@ -36,7 +36,6 @@ public class UserController {
 
     @PostMapping("/reg")
     public int register(@RequestBody User user) {
-        System.out.println(user);
         return userService.register(user);
     }
 
@@ -49,6 +48,7 @@ public class UserController {
     public User getUerInSession(HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user==null){
+            System.out.println("no user session");
             return new User();
         }
         System.out.println(user.getName()+" login by session");

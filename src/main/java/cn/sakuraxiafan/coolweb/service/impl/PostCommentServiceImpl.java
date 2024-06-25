@@ -29,8 +29,8 @@ public class PostCommentServiceImpl implements PostCommentService {
     }
 
     @Override
-    public void addComment(PostComment postComment) {
-        postCommentMapper.insert(postComment);
+    public int addComment(PostComment postComment) {
+        return postCommentMapper.insert(postComment);
     }
 
     @Override

@@ -1,22 +1,24 @@
 package cn.sakuraxiafan.coolweb.controller;
 
 import cn.sakuraxiafan.coolweb.entity.PostComment;
+import cn.sakuraxiafan.coolweb.entity.User;
 import cn.sakuraxiafan.coolweb.service.PostCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/posts")
 public class PostCommentController {
     @Autowired
     private PostCommentService postCommentService;
 
     // 获取某个帖子的所有评论
-    @GetMapping("/post/{postId}")
+    @GetMapping("/{postId}/comments")
     public ResponseEntity<List<PostComment>> getCommentsByPostId(@PathVariable int postId) {
         System.out.println("请求"+postId+"的评论");
         List<PostComment> comments = postCommentService.getCommentsByPostId(postId);
@@ -24,10 +26,15 @@ public class PostCommentController {
     }
 
     // 添加新评论
-    @PostMapping("/add")
-    public ResponseEntity<String> addComment(@RequestBody PostComment postComment) {
+    @PostMapping("/{postId}/comments")
+    public ResponseEntity<Integer> addComment(@RequestBody PostComment postComment, HttpSession session) {
         postComment.setDate(new Timestamp(System.currentTimeMillis()));
-        postCommentService.addComment(postComment);
-        return ResponseEntity.ok("Comment added successfully");
+        if (postComment.getTargetId()!=null) {
+            PostComment targetComment = postCommentService.getCommentById(postComment.getTargetId());
+            postComment.setParentId(targetComment.getParentId());
+        }
+        User user = (User) session.getAttribute("user");
+        postComment.setAuthor(user.getName());
+        return ResponseEntity.ok(postCommentService.addComment(postComment));
     }
 }

@@ -13,28 +13,36 @@ Vue.component('comments', {
     template: `
 <div>
     <div class="comments-list">
+        <el-divider></el-divider>
+        <div> 
+            <el-button icon="el-icon-s-comment" type="primary"
+            @click="openCommentDialog(null)">我也说两句</el-button>
+        </div>
+        <el-divider></el-divider>
         <div class="comments-box" v-for="(comment, index) in paginatedComments" :key="comment.id">
             <div class="comments">
                 <div class="comment">
                     <span class="comment-author">{{ comment.author }}</span>
-                    <span class="comment-content">{{ comment.content }}</span>
-                    <el-button @click="openCommentDialog(comment)" class="mini-button">回复</el-button>
+                    <span class="comment-content" 
+                        @click="openCommentDialog(comment)">{{ comment.content }}</span>
+                        <i class="el-icon-time">{{comment.date}}</i>
+                    <el-button @click="openCommentDialog(comment)" type="text" style="color: #cccccc">回复</el-button>
                     <el-button v-if="comment.replies.length > 0 && !comment.showReplies" @click="toggleReplies(index)" 
-                        style="float: right;" size="mini">
+                        style="float: right;" type="text">
                         <i class="el-icon-arrow-down" >展开</i>
                     </el-button>
                     <el-button v-else @click="toggleReplies(index)" 
-                        style="float: right;" size="mini">
+                        style="float: right;" type="text">
                         <i class="el-icon-arrow-up" >隐藏</i>
                     </el-button>
+                    <div class="comment" v-for="reply in comment.replies" :key="reply.id">
+                        <span class="comment-author">{{ reply.author }}</span>
+                        <span class="comment-content"
+                        @click="openCommentDialog(reply)">{{ reply.content }}</span>
+                        <i class="el-icon-time">{{reply.date}}</i>
+                        <el-button @click="openCommentDialog(reply)" type="text" style="color: #cccccc">回复</el-button>
+                    </div>
                 </div>
-            <div class="comments" v-if="comment.showReplies">
-                <div class="comment" v-for="reply in comment.replies" :key="reply.id">
-                    <span class="comment-author">{{ reply.author }}</span>
-                    <span class="comment-content">{{ reply.content }}</span>
-                    <el-button @click="openCommentDialog(reply)" class="mini-button" >回复</el-button>
-                </div>
-            </div>
             </div>
         </div>
     </div>
@@ -94,8 +102,15 @@ Vue.component('comments', {
         },
         openCommentDialog(comment) {
             // location.href = "/login.html";
-            /**/
             // 打开评论对话框，并设置评论对话框的内容
+            if (this.user.id===null){
+                this.$message({
+                    showClose: true,
+                    message: '请登录后再评论',
+                    type: 'warning'
+                });
+                return
+            }
             this.showCommentDialog = true;
             this.commentToReply = comment; // 将被回复的评论传递给评论对话框组件
         },
@@ -107,20 +122,16 @@ Vue.component('comments', {
         submitComment() {
             // 触发关闭评论对话框的事件
             this.$emit('closeCommentDialog');
-            if (this.user.id!=null){
-                alert(this.user.id+'对'+this.commentToReply.id+' 提交评论：'+ this.commentContent);
-            }else{
-                alert('匿名对'+this.commentToReply.id+' 提交评论：'+ this.commentContent);
-            }
-            // 提交评论的逻辑，可以在这里处理发送评论的操作
             // 将 commentToReply 和 commentContent 通过事件传递给父组件
+            let targetId = null;
+            if (this.commentToReply!=null){
+                targetId= this.commentToReply.id;
+            }
             this.$emit('submit-comment', {
-                commentToReply: this.commentToReply,
+                commentToReply: targetId,
                 commentContent: this.commentContent
             });
-
-            this.commentContent = '';
-            // 清空评论内容
+            this.commentContent = '';// 清空评论内容
         }
     },
     mounted() {
@@ -129,9 +140,5 @@ Vue.component('comments', {
         style.rel = 'stylesheet';
         style.href = '../css/comment.css';
         document.head.appendChild(style);
-        const style2 = document.createElement('link');
-        style2.rel = 'stylesheet';
-        style2.href = 'https://cdn.staticfile.org/element-ui/2.15.9/theme-chalk/index.css';
-        document.head.appendChild(style2);
     }
 });
