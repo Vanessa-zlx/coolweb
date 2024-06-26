@@ -16,13 +16,21 @@ public class AlipayConfig {
 	@Value("${alipay.alipayPublicKey}")
 	private String alipayPublicKey;
 
-	// 服务器异步通知页面路径  需http://格式的完整路径，不能加?id=123这类自定义参数，必须外网可以正常访问
-	@Value("${alipay.notifyUrl}")
-	private String notifyUrl;
+	@Value("${alipay.baseUrl}")
+	private String baseUrl;
 
-	// 页面跳转同步通知页面路径 需http://格式的完整路径，不能加?id=123这类自定义参数，必须外网可以正常访问
-	@Value("${alipay.returnUrl}")
-	private String return_url;
+	@Value("${alipay.notifyPath}")
+	private String notifyPath;
+
+	@Value("${alipay.returnPath}")
+	private String returnPath;
+
+	public String getNotifyUrl() {
+		return baseUrl + notifyPath;
+	}
+	public String getReturnUrl() {
+		return baseUrl + returnPath;
+	}
 
 	private String sign_type = "RSA2";
 	private String charset = "utf-8";

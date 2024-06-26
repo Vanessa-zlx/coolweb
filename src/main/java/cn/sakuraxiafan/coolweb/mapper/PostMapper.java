@@ -21,6 +21,17 @@ public interface PostMapper {
             "VALUES (#{postAuthor}, #{postContent}, #{postTitle}, #{postCover}," +
             " #{postDate}, #{viewCount}, #{commentCount}, #{postBrief});")
     int insertPost(Post post);
+
+    @Select("SELECT id, post_author, post_content, post_title, post_cover, post_date, view_count, comment_count, post_brief FROM tech_post WHERE id = #{id} FOR UPDATE")
+    Post selectPostForUpdate(Integer id);
+
+    @Update("UPDATE tech_post SET post_author = #{postAuthor}, post_content = #{postContent}, post_title = #{postTitle}, post_cover = #{postCover}, " +
+            "post_date = #{postDate}, view_count = #{viewCount}, comment_count = #{commentCount}, post_brief = #{postBrief} WHERE id = #{id}")
+    int updatePost(Post post);
+
+    @Update("UPDATE tech_post SET view_count = #{viewCount} WHERE id = #{id}")
+    int updateViewCount(@Param("id") Integer id, @Param("viewCount") int viewCount);
+
 }
 //    @Results(id = "postResultMap", value = {
 //            @Result(property = "id", column = "id", javaType = Integer.class),

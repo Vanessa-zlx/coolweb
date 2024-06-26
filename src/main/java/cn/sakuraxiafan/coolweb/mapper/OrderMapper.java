@@ -13,11 +13,11 @@ public interface OrderMapper {
     @Select("SELECT * FROM orders")
     List<Order> selectAllOrders();
 
-    @Insert("INSERT INTO orders (trade_no, subject, total_amount, alipay_trade_no) " +
-            "VALUES (#{tradeNo}, #{subject}, #{totalAmount}, #{alipayTradeNo})")
+    @Insert("INSERT INTO orders (customer_id ,creation_time,trade_no, subject, total_amount) " +
+            "VALUES (#{customerId}, #{creationTime}, #{tradeNo}, #{subject}, #{totalAmount})")
     int insertOrder(Order order);
 
-    @Update("UPDATE orders SET trade_no = #{tradeNo}, subject = #{subject}, " +
+    @Update("UPDATE orders SET payment_time = #{paymentTime}, trade_no = #{tradeNo}, subject = #{subject}, " +
             "total_amount = #{totalAmount}, alipay_trade_no = #{alipayTradeNo} " +
             "WHERE id = #{id}")
     int updateOrder(Order order);

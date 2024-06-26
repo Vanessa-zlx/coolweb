@@ -45,10 +45,11 @@
             <el-row gutter="20">
                 <el-col span="4">
                     <el-card style="height: 900px">
-                        <a href="personal.html" style="display: block ; color:#cccccc;">个人信息</a>
-                        <a href="postArticle.html" style="display: block ; color: orange">稿件发布</a>
-                        <a href="articleManagement.html" style="display: block ; color: orange">稿件管理</a>
-                        <a href="productUpload.html" style="display: block ; color: orange">产品上传</a>
+                        <a href="personal.html" style="display: block ; color:#cccccc;font-size: 20px;text-decoration: none;">个人信息</a>
+                        <a href="postArticle.html" style="display: block ; color: orange;font-size: 20px;text-decoration: none;">稿件发布</a>
+                        <a href="articleManagement.html" style="display: block ; color: orange;font-size: 20px;text-decoration: none;">稿件管理</a>
+                        <a href="productUpload.html" style="display: block ; color: orange;font-size: 20px;text-decoration: none;">产品上传</a>
+                        <a href="orders.html" style="display: block ; color: orange;font-size: 20px;text-decoration: none;">我的订单</a>
                     </el-card>
                 </el-col>
                 <el-col span="20">
@@ -64,7 +65,7 @@
                         <el-form label-width="100px">
                             <el-form-item label="文章标题">
                                 <el-input style="width: 200px" v-model="post.postTitle"
-                                        placeholder="请输入标题"></el-input>
+                                          placeholder="请输入标题"></el-input>
                             </el-form-item>
                             <el-form-item label="文章简介">
                                 <el-input style="width: 200px" v-model="post.postBrief" type="textarea"
@@ -182,9 +183,13 @@
                     axios.post('/post/update', this.post)
                         .then(response => {
                             if (response.data === 1) {
-                                console.log('更新成功');
+                                this.$message({
+                                    message: '修改成功',
+                                    type: 'success'
+                                })
+                                this.getComments()
                             } else {
-                                console.log('更新失败');
+                                this.$message.error("修改失败，请重试")
                             }
                         })
                 }
@@ -205,6 +210,20 @@
                     location.href="index.html"
                 }
             })
+            const urlParams = new URLSearchParams(window.location.search);
+            const postId = urlParams.get('id');
+            if (postId!=null){
+                axios.get("/post/select/id?id=" + postId).then(response => {
+                    var p = response.data;
+                    // 如果获取到的帖子 id 为空，跳转到首页
+                    if (p.id==null) {
+                        location.href = "/index.html";
+                    }else{
+                        this.post=p;
+                        console.log(this.post)
+                    }
+                })
+            }
         }
     })
     /**********富文本编辑器相关js结束***********/
@@ -234,14 +253,19 @@
     const urlParams = new URLSearchParams(window.location.search);
     const postId = urlParams.get('id');
     if (postId!=null){
-        let response1 = axios.get("/post/select/id?id=" + postId);
-        this.post = response1.data;
-        // 如果获取到的帖子 id 为空，跳转到首页
-        if (!this.post.id) {
-            location.href = "/index.html";
-        }
+        axios.get("/post/select/id?id=" + postId).then(response => {
+            var p = response.data;
+            // 如果获取到的帖子 id 为空，跳转到首页
+            console.log(p)
+            if (p.id==null) {
+                location.href = "/index.html";
+            }else{
+                this.post=p;
+                console.log(this.post)
+                this.editor.setHtml(p.postContent) // 重新设置编辑器内容
+            }
+        })
     }
-    this.editor.setHtml(this.post.postContent) // 重新设置编辑器内容
 
 
 </script>

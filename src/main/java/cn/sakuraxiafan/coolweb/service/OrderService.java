@@ -1,10 +1,12 @@
 package cn.sakuraxiafan.coolweb.service;
 
 import cn.sakuraxiafan.coolweb.entity.Order;
+import cn.sakuraxiafan.coolweb.entity.User;
 import cn.sakuraxiafan.coolweb.mapper.OrderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -28,7 +30,10 @@ public class OrderService {
         return orderMapper.selectAllOrders();
     }
 
-    public int createOrder(Order order) {
+    public int createOrder(User user , Order order) {
+        order.setCreationTime(new Timestamp(System.currentTimeMillis()));
+        order.setTradeNo(String.valueOf(System.currentTimeMillis()));
+        order.setCustomerId(user.getId());
         return orderMapper.insertOrder(order);
     }
 

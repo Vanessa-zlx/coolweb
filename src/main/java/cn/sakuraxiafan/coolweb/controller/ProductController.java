@@ -43,8 +43,7 @@ public class ProductController {
     }
 
     @PostMapping("/product")
-    public int insert(HttpSession session, @RequestBody Product product) {
-        User user = (User) session.getAttribute("user");  //未登录用户有拦截器?
+    public int insert(@RequestBody Product product) {
         return productService.insertProduct(product);
 //        return -1;
     }

@@ -121,7 +121,6 @@ Vue.component('comments', {
         },
         submitComment() {
             // 触发关闭评论对话框的事件
-            this.$emit('closeCommentDialog');
             // 将 commentToReply 和 commentContent 通过事件传递给父组件
             let targetId = null;
             if (this.commentToReply!=null){
@@ -131,6 +130,7 @@ Vue.component('comments', {
                 commentToReply: targetId,
                 commentContent: this.commentContent
             });
+            this.showCommentDialog = false;
             this.commentContent = '';// 清空评论内容
         }
     },

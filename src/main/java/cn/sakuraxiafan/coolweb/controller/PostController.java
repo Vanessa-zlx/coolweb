@@ -3,6 +3,7 @@ package cn.sakuraxiafan.coolweb.controller;
 import cn.sakuraxiafan.coolweb.entity.Post;
 import cn.sakuraxiafan.coolweb.entity.User;
 import cn.sakuraxiafan.coolweb.service.impl.PostServiceImpl;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +31,11 @@ public class PostController {
         return postService.deletePost(id);
     }
 
+    @PostMapping("/post/update")
+    public int updatePost(@RequestBody Post post) {
+        return postService.updatePost(post);
+    }
+
     @PostMapping("/post/insert")
     public int insert(HttpSession session, @RequestBody Post post) {
         User user = (User) session.getAttribute("user");//未登录用户有拦截器
@@ -39,4 +45,10 @@ public class PostController {
         post.setCommentCount(0);
         return postService.insertPost(post);
     }
+
+    @PostMapping("/post/incrementViewCount")
+    public int incrementViewCount(@RequestBody Integer postId) {
+        return postService.incrementViewCount(postId);
+    }
+
 }

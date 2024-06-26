@@ -18,7 +18,7 @@ Vue.component('order', {
           <el-button v-if="scope.row.alipayTradeNo">
             已支付
           </el-button>
-          <el-button v-else @click="pay(scope.row)">待支付</el-button>
+          <el-button v-else @click="pay(scope.row)" type="danger">待支付</el-button>
         </template>
       </el-table-column>
     </el-table>

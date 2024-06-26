@@ -325,6 +325,15 @@
                     return
                 }
                 // 获取当前页面的 URL
+                axios.post("/post/incrementViewCount", v.postArr[index].id, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.data != 1) {
+                        console.log("更新阅读量失败")
+                    }
+                })
                 let currentUrl = window.location.href;
                 // 替换 id 参数的值为 18
                 let newUrl = currentUrl.replace(/(id=)\d+/, 'id='+v.postArr[index].id);
@@ -411,6 +420,15 @@
                 location.href = "/index.html";
                 return;
             }
+            axios.post("/post/incrementViewCount", this.post.id, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                if (response.data!=1){
+                    console.log("更新阅读量失败")
+                }
+            })
 
             axios.get("/user/getsession").then(function (response){
                 v.user = response.data;

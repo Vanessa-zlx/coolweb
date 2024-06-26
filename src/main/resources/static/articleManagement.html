@@ -62,10 +62,10 @@
                                              prop="postContent" align="center"></el-table-column>
                             <el-table-column label="作者"
                                              prop="postAuthor" align="center"></el-table-column>
-                            <el-table-column label="评论数"
-                                             prop="commentCount" align="center"></el-table-column>
                             <el-table-column label="浏览数"
                                              prop="viewCount" align="center"></el-table-column>
+                            <el-table-column label="评论数"
+                                             prop="commentCount" align="center"></el-table-column>
                             <el-table-column label="创建时间"
                                              prop="postData" align="center">
                                 <template slot-scope="scope">
@@ -142,7 +142,7 @@
                 })
             },
             update(postId){
-                location.href="postArticle.html?id="+postId
+                location.href="updatePost.html?id="+postId
             },
             formatDate(timestamp) {
                 if (!timestamp) return '';
@@ -173,7 +173,9 @@
             })
             axios.get("/post/select").then(function (response){
                 v.postArr = response.data;
-                v.postArr = v.postArr.filter((post) => post.postAuthor === v.user.name);
+                if (!v.user.admin){
+                    v.postArr = v.postArr.filter((post) => post.postAuthor === v.user.name);
+                }
             })
         }
     })

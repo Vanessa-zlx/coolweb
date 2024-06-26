@@ -17,7 +17,7 @@ Vue.component('my-slideshow', {
     template: `
             <el-carousel height="600px">
                 <el-carousel-item v-for="b in bannerArr" :key="b.id">
-                    <img :src="b.bannerUrl" width="100%" alt="" style="width:1200px; height: 600px">
+                    <img :src="b.bannerUrl" width="100%" alt="" style="width:1200px; height: 600px; object-fit: cover;">
                 </el-carousel-item>
             </el-carousel>
     `

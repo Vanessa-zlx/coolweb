@@ -6,13 +6,19 @@
     <title>Title</title>
 </head>
 <body>
-    <div id="app">>
-        <order :orders="orders"
-        @pay="handlePay"></order>
+    <div id="app"  v-if="user.id">
+        <el-container>
+            <el-header height="80px">
+                <my-header :user="user" @logout="handleLogout"></my-header>
+            </el-header>
+            <order :orders="orders"
+                   @pay="handlePay"></order>
+        </el-container>
     </div>
 </body>
 <script src="js/vue.js"></script>
 <script src="js/element-ui_2.15.9_index.js"></script>
+<script src="js/my-header.js"></script>
 <script src="js/eui.js"></script>
 <script src="js/axios.min.js"></script>
 <script src="js/order.js"></script>
@@ -20,37 +26,58 @@
     new Vue({
         el: '#app',
         data: {
-            orders: []
+            orders: [],
+            user: {
+                id: null
+            }
         },
         mounted() {
-            this.fetchOrders();
+            this.initData()
         },
         methods: {
-            async fetchOrders() {
+            handleLogin(){
+                localStorage.setItem('redirectUrl', window.location.href);//允许登录后回来
+            },
+            handleLogout(){
+                console.log("handleLogout")
+                axios.get("/user/logout")
+                v.user.id=null
+                window.location.href="gkindex.html"/*页面需要跳转*/
+            },
+            async initData() {
+                var response = await axios.get("/user/getsession");
+                this.user = response.data;
+                if (this.user.id==null){
+                    this.handleLogin()
+                    window.location.href="login.html"
+                }
+                this.getOrders()
+            },
+            async getOrders(){
                 // 使用 axios 发送 GET 请求获取订单数据
                 var response = await axios.get('/orders');
                 this.orders = response.data;
             },
             handlePay(order){
-                // const { tradeNo } = order;
-                // alert("即将支付"+tradeNo)
-                // const url=`http://localhost:8080/alipay/pay?tradeNo=`+tradeNo
-                // window.open(url);
-                // // window.location.href=url
-                this.$confirm('确认支付？, 是否继续?', '删除打卡信息?', {
+                this.$confirm('确认支付?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    window.open(`http://2a935m.natappfree.cc/alipay/pay?subject=${order.subject}&tradeNo=${order.tradeNo}&totalAmount=${order.totalAmount}`)
-                    this.$message.success('付款成功')
-                    this.load()
-                }).catch(() => {
-                    this.$message({
-                        type: 'info',
-                        message: '已取消付款'
+                    window.location.href=`/alipay/pay?subject=${order.subject}&tradeNo=${order.tradeNo}&totalAmount=${order.totalAmount}`
+
+                    axios.get(`/orders/${this.order.id}/`).then( response => {
+                        order=response.data
+                        if (order.alipayTradeNo!=null) {
+                            this.getOrders()
+                            this.$message({
+                                message: '交易完成',
+                                type: 'success'
+                            })
+                        } else {
+                            this.$message.error("交易失败，请重试")
+                        }
                     })
-                    this.load()
                 })
             }
         },

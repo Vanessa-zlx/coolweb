@@ -1,8 +1,10 @@
 package cn.sakuraxiafan.coolweb.controller;
 
+import cn.sakuraxiafan.coolweb.entity.Post;
 import cn.sakuraxiafan.coolweb.entity.PostComment;
 import cn.sakuraxiafan.coolweb.entity.User;
 import cn.sakuraxiafan.coolweb.service.PostCommentService;
+import cn.sakuraxiafan.coolweb.service.impl.PostServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,9 @@ import java.util.List;
 public class PostCommentController {
     @Autowired
     private PostCommentService postCommentService;
+
+    @Autowired
+    private PostServiceImpl postService;
 
     // 获取某个帖子的所有评论
     @GetMapping("/{postId}/comments")
@@ -31,10 +36,19 @@ public class PostCommentController {
         postComment.setDate(new Timestamp(System.currentTimeMillis()));
         if (postComment.getTargetId()!=null) {
             PostComment targetComment = postCommentService.getCommentById(postComment.getTargetId());
-            postComment.setParentId(targetComment.getParentId());
+            if (targetComment.getParentId()==null) {
+                postComment.setParentId(targetComment.getId());
+            }else {
+                postComment.setParentId(targetComment.getParentId());
+            }
         }
         User user = (User) session.getAttribute("user");
         postComment.setAuthor(user.getName());
+
+        Post post = postService.selectPostForUpdate(postComment.getPostId());
+        post.setCommentCount(post.getCommentCount()+1);
+        postService.updatePost(post);
+
         return ResponseEntity.ok(postCommentService.addComment(postComment));
     }
 }

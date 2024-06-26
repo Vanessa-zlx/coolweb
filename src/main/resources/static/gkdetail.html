@@ -4,115 +4,8 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.15.9/theme-chalk/index.css">
-    <style>
-        body {
-            background-image: url("imgs/bg.jpg");
-            overflow-x: hidden !important;
-        }
-        .center {
-            width: 1050px;
-            margin: 0 auto;
-            height: auto;
-        }
-        #side {
-            float: left;
-            height: 100%; /* 全高：如果你想要 "auto" 高度，请删除它 */
-            position: fixed; /* 固定侧边栏（滚动时保持原位）*/
-            z-index: 1; /* 保持领先 */
-            top: 250px; /* 保持在顶部 */
-            left: 0;
-            overflow-x: hidden; /* 禁用水平滚动 */
-            padding-top: 20px;
-        }
-        a {
-            text-decoration: none;
-            cursor:url('imgs/pointer.cur'), auto;
-        }
-        body {
-            cursor:url('imgs/default.cur'), auto;
-        }
-
-        #menu {
-            height: 70%;
-            position: fixed;
-            background-color: rgba(0, 0, 0, 0.5);
-            width: 220px;
-            transition: 1000ms all cubic-bezier(0.19, 1, 0.22, 1);
-            transform: translateX(-100%);
-            left: 60px;
-        }
-
-        #menu.expanded {
-            transform: translateX(0%);
-            left: 0px;
-        }
-
-        .menu-inner {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-
-        #blob {
-            top: 0;
-            z-index: -1;
-            right: 60px;
-            transform: translateX(100%);
-            height: 100%;
-            position: absolute;
-        }
-
-        #blob-path {
-            height: 100%;
-            fill:  lightcoral;
-        }
-
-        .hamburger {
-            right: 20px;
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            margin-top: -10px;
-        }
-
-        .hamburger .line {
-            width: 100%;
-            height: 4px;
-            /*background-color: #000;*/
-            position: absolute;
-        }
-
-        .hamburger .line:nth-child(2) {
-            top: 50%;
-            margin-top: -2px;
-        }
-
-        .hamburger .line:nth-child(3) {
-            bottom: 0;
-        }
-
-        h1 {
-            position: fixed;
-            right: 0;
-            margin: 0;
-        }
-
-        ul {
-            padding: 0;
-            list-style: none;
-            width: 80%;
-            margin-left: 10%;
-            position: absolute;
-            top: 10px;
-        }
-
-        ul li {
-            color: #fff;
-            font-family: sans-serif;
-            padding: 20px 0;
-        }
-
-    </style>
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/my-aside.css">
 </head>
 <body>
 <div id="app">
@@ -160,7 +53,7 @@
                     </div>
                     <div style="background-color: transparent; height: 60px; line-height: 60px;
                     color: #212121">
-                        <el-button round type="medium">立即购买</el-button>
+                        <el-button round type="medium" @click="addOrder()">立即购买</el-button>
                     </div>
 
                 </el-col>
@@ -202,99 +95,19 @@
 <script src="js/my-footer.js"></script>
 <script src="js/my-aside.js"></script>
 <script src='js/jquery-1.12.4.min.js'></script>
-<script>
-    $(window).load(function(){
-        var height = window.innerHeight,
-            x= 0, y= height/2,
-            curveX = 10,
-            curveY = 0,
-            targetX = 0,
-            xitteration = 0,
-            yitteration = 0,
-            menuExpanded = false;
-
-        blob = $('#blob'),
-            blobPath = $('#blob-path'),
-
-            hamburger = $('.hamburger');
-
-        $(this).on('mousemove', function(e){
-            x = e.pageX;
-
-            y = e.pageY-50;
-        });
-
-        $('.hamburger, .menu-inner').on('mouseenter', function(){
-            $(this).parent().addClass('expanded');
-            menuExpanded = true;
-        });
-
-        $('.menu-inner').on('mouseleave', function(){
-            menuExpanded = false;
-            $(this).parent().removeClass('expanded');
-        });
-
-        function easeOutExpo(currentIteration, startValue, changeInValue, totalIterations) {
-            return changeInValue * (-Math.pow(2, -10 * currentIteration / totalIterations) + 1) + startValue;
-        }
-
-        var hoverZone = 150;
-        var expandAmount = 20;
-
-        function svgCurve() {
-            if ((curveX > x-1) && (curveX < x+1)) {
-                xitteration = 0;
-            } else {
-                if (menuExpanded) {
-                    targetX = 0;
-                } else {
-                    xitteration = 0;
-                    if (x > hoverZone) {
-                        targetX = 0;
-                    } else {
-                        targetX = -(((60+expandAmount)/100)*(x-hoverZone));
-                    }
-                }
-                xitteration++;
-            }
-
-            if ((curveY > y-1) && (curveY < y+1)) {
-                yitteration = 0;
-            } else {
-                yitteration = 0;
-                yitteration++;
-            }
-
-            curveX = easeOutExpo(xitteration, curveX, targetX-curveX, 100);
-            curveY = easeOutExpo(yitteration, curveY, y-curveY, 100);
-
-            var anchorDistance = 200;
-            var curviness = anchorDistance - 40;
-
-            var newCurve2 = "M60,"+height+"H0V0h60v"+(curveY-anchorDistance)+"c0,"+curviness+","+curveX+","+curviness+","+curveX+","+anchorDistance+"S60,"+(curveY)+",60,"+(curveY+(anchorDistance*2))+"V"+height+"z";
-
-            blobPath.attr('d', newCurve2);
-
-            blob.width(curveX+60);
-
-            hamburger.css('transform', 'translate('+curveX+'px, '+curveY+'px)');
-
-
-            window.requestAnimationFrame(svgCurve);
-        }
-
-        window.requestAnimationFrame(svgCurve);
-
-    });
-</script>
+<script src="js/hamburger.js"></script>
 <script>
     let v = new Vue({
         el:'#app',
         data:function (){
             return{
-                categorarr:[],
+                // categorarr:[],
                 wd:"",
                 product:{},
+                order: {
+                    subject: "",
+                    totalAmount: null
+                },
                 user:{
                     name:"",
                     password:"",
@@ -305,9 +118,9 @@
             }
         },
         created:function (){
-            axios.get("category/select").then(function (response){
-                v.categorarr = response.data;
-            })
+            // axios.get("category/select").then(function (response){
+            //     v.categorarr = response.data;
+            // })
             let id = location.search.split("=")[1] /**获取id**/
             axios.get("/product/select/id?id="+id).then(function (response){
                 v.product = response.data;
@@ -335,6 +148,26 @@
                 v.user.id=null
                 /*管理员页面需要跳转*/
             },
+            addOrder(){
+                if (v.user.id==null){
+                    this.handleLogin()
+                    location.href="login.html"
+                    return
+                }
+                this.order.subject=this.product.productName
+                this.order.totalAmount=this.product.productPrice
+                axios.post("/orders", this.order).then(response => {
+                    if (response.data===1){
+                        this.$message({
+                            message: '下单成功，将前往支付',
+                            type: 'success'
+                        });
+                        location.href='/orders.html';
+                    }else {
+                        this.$message.error("下单失败，请重试")
+                    }
+                })
+            }
         }
     })
 </script>

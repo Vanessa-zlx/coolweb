@@ -86,11 +86,13 @@ public class AliPayController {
             return;
         }
         System.out.println(alipayConfig);
-        AlipayClient alipayClient = new DefaultAlipayClient(alipayConfig.getGatewayUrl(), "",
+        AlipayClient alipayClient = new DefaultAlipayClient(alipayConfig.getGatewayUrl(), "9021000138652520",
                 alipayConfig.getAppPrivateKey(), FORMAT, CHARSET, alipayConfig.getAlipayPublicKey(), SIGN_TYPE);
         AlipayTradePagePayRequest request = new AlipayTradePagePayRequest();
-        request.setNotifyUrl("http://2a935m.natappfree.cc/alipay/notify");
-        request.setReturnUrl("http://2a935m.natappfree.cc/orders.html");
+//        request.setNotifyUrl("http://2a935m.natappfree.cc/alipay/notify");
+//        request.setReturnUrl("http://2a935m.natappfree.cc/orders.html");
+        request.setNotifyUrl(alipayConfig.getNotifyUrl());
+        request.setReturnUrl(alipayConfig.getReturnUrl());
         request.setBizContent("{\"out_trade_no\":\"" + aliPay.getTradeNo() + "\","
                 + "\"total_amount\":\"" + aliPay.getTotalAmount() + "\","
                 + "\"subject\":\"" + aliPay.getSubject() + "\","

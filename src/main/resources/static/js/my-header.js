@@ -14,15 +14,15 @@ Vue.component('my-header', {
         reg(){
             console.log(location.href)
             if (location.href !== "/reg.html") {
-                location.href="/reg.html"
                 this.$emit('reg');
+                location.href="/reg.html"
             }
         },
         login() {
             console.log(location.href)
             if (location.href !== "/reg.html") {
-                location.href="/login.html"
                 this.$emit('login');
+                location.href="/login.html"
             }
         },
         logout(){
