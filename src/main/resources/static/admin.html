@@ -53,20 +53,20 @@
             <el-main>
                 <!--用户表格开始-->
                 <el-table v-if="currentIndex == 1" :data="userArr">
-                    <el-table-column type="id" label="编号"></el-table-column>
+                    <el-table-column prop="id" label="编号"></el-table-column>
                     <el-table-column prop="name" label="用户名"></el-table-column>
                     <el-table-column prop="nickname" label="昵称"></el-table-column>
                     <el-table-column label="头像">
                         <template slot-scope="scope">
-                            <el-avatar :src="scope.row.url"></el-avatar>
+                            <el-avatar :src="scope.row.avatarUrl"></el-avatar>
                         </template>
                     </el-table-column>
                     <el-table-column label="管理员">
                         <template slot-scope="scope">
-                            <el-switch v-model="scope.row.isAdmin"></el-switch>
+                            <el-switch v-model="scope.row.admin"></el-switch>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="userRegistered" label="创建时间"></el-table-column>
+<!--                    <el-table-column prop="userRegistered" label="创建时间"></el-table-column>-->
                     <el-table-column label="删除">
                         <template slot-scope="scope">
                             <!--scope代表是每行对应的数据的index属性的下标，有row属性，可以把整个一行当做对象返回-->
@@ -80,8 +80,8 @@
                 </el-table>
                 <!--用户表格结束-->
                 <!--轮播图表格开始-->
-                <el-table v-if="currentIndex === 2" :data="bannerArr">
-                    <el-table-column type="index" label="编号"></el-table-column>
+                <el-table v-if="currentIndex == 2" :data="bannerarr">
+                    <el-table-column prop="index" label="编号"></el-table-column>
                     <el-table-column label="轮播图">
                         <template slot-scope="scope">
                             <!--                            <img :src="scope.row.imgUrl" width="200px">-->
@@ -110,8 +110,8 @@
                     </el-table-column>
                     <el-table-column label="摘要" width="300px"
                                      prop="postBrief" align="center"></el-table-column>
-                    <el-table-column label="类型"
-                                     prop="categoryName" align="center"></el-table-column>
+<!--                    <el-table-column label="类型"-->
+<!--                                     prop="categoryName" align="center"></el-table-column>-->
                     <el-table-column label="浏览量"
                                      prop="viewCount" align="center"></el-table-column>
                     <el-table-column label="回复量"
@@ -183,6 +183,8 @@
             handleSelect(key, keyPath) {
                 //key就是点击菜单项的index值
                 v.currentIndex = key;
+                console.log(v.currentIndex)
+                console.log(v.bannerarr)
             },
 
             handleReg(){},/*不会执行*/
@@ -204,11 +206,10 @@
                     location.href="personal.html"
                 }
             })
+            this.getBanner()
+
             axios.get("/user/select").then(function (response){
                 v.userArr=response.data;
-            })
-            axios.get("/banner/select").then(function (response){
-                v.bannerarr=response.data;
             })
             axios.get("/post/select").then(function (response){
                 v.postArr = response.data;

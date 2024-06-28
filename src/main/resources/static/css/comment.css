@@ -32,3 +32,6 @@
 .el-icon-arrow-up .el-icon-arrow-down{
     color: #9999a6;
 }
+.el-pagination .number {
+    color: #333; /* 设置页码的颜色为黑色 */
+}

@@ -57,6 +57,7 @@
                 // 使用 axios 发送 GET 请求获取订单数据
                 var response = await axios.get('/orders');
                 this.orders = response.data;
+                this.orders = this.orders.filter((order) => order.customerId === this.user.id);
             },
             handlePay(order){
                 this.$confirm('确认支付?', '提示', {

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -159,6 +160,7 @@ public class AliPayController {
                 System.out.println("支付成功");
                 Order order = orderService.selectByTradeNo(tradeNo);
                 order.setAlipayTradeNo(alipayTradeNo);
+                order.setPaymentTime(new Timestamp(System.currentTimeMillis()));
                 orderService.updateOrder(order);
             }
         }

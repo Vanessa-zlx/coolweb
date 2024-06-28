@@ -36,7 +36,7 @@
                             <a style="color: #333;text-decoration: none"
                                v-show="p.postCover!=null"
                                :href="'/postDetail.html?id='+p.id">
-                                <img :src="p.postCover" width="300" height="200" alt="文章">
+                                <img :src="p.postCover" width="300" height="200" alt="文章" style="object-fit: cover;">
 <!--                                <img :src="'https://c-ssl.duitang.com/uploads/item/201504/23/20150423H1825_usALr.jpeg'" width="300" height="200" alt="">-->
                             </a>
                         </span>
@@ -120,7 +120,7 @@
             })
             axios.get("/post/select").then(function (response) {
                 v.postArr = response.data;
-                v.postArr = v.postArr.sort((a, b) => b.viewCount - a.viewCount);
+                v.postArr = v.postArr.sort((a, b) => b.commentCount - a.commentCount);
                 const maxLength = 30;
                 for(let i = 0;i < v.postArr.length;i++){ //省略过长标题
                     if (v.postArr[i].postTitle.length > maxLength) {

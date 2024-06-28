@@ -31,11 +31,12 @@ Vue.component('comments', {
                         style="float: right;" type="text">
                         <i class="el-icon-arrow-down" >展开</i>
                     </el-button>
-                    <el-button v-else @click="toggleReplies(index)" 
+                    <el-button v-if="comment.replies.length > 0 && comment.showReplies" @click="toggleReplies(index)" 
                         style="float: right;" type="text">
                         <i class="el-icon-arrow-up" >隐藏</i>
                     </el-button>
-                    <div class="comment" v-for="reply in comment.replies" :key="reply.id">
+                    <div class="comment" v-if="comment.replies.length > 0 && comment.showReplies" 
+                    v-for="reply in comment.replies" :key="reply.id" >
                         <span class="comment-author">{{ reply.author }}</span>
                         <span class="comment-content"
                         @click="openCommentDialog(reply)">{{ reply.content }}</span>
